@@ -52,7 +52,7 @@
         </el-row>
         <el-row>
           <el-form-item label="编辑器" prop="content">
-            <Markdown v-model="formData.content" placeholder="请输入编辑器" :style="{width: '100%'}" :exportFileName="formData.title"></Markdown>
+            <MarkdownPro v-model="formData.content" placeholder="请输入编辑器" @on-upload-image="onUploadImage" @on-ready="onReady" :style="{width: '100%'}" :exportFileName="formData.title"></MarkdownPro>
           </el-form-item>
         </el-row>
       </el-form>
@@ -89,11 +89,11 @@
 
 <script>
 import {findPage, insert, update, getDetail, remove, removeSelected} from '@/api/article'
-import Markdown from 'vue-meditor'
-import {MarkdownPreview} from 'vue-meditor'
+import {add} from '@/api/attach'
+import {MarkdownPreview, MarkdownPro} from 'vue-meditor'
 
 export default {
-  components: {Markdown, MarkdownPreview},
+  components: {MarkdownPreview, MarkdownPro},
   methods: {
     getPage: function () {
       findPage(this.params).then(data => {
@@ -166,6 +166,18 @@ export default {
     sizeChange: function (pagesize) {
       this.params.pagesize = pagesize
       this.getPage()
+    },
+    onUploadImage: function(data) {
+      add(data).then((data) => {
+        this.insertContent( "![image](" + data.data + ")")
+      })
+    },
+    onReady: function(obj) {
+      console.log(obj)
+      this.insertContent = obj.insertContent
+    },
+    insertContent: function() {
+
     }
   },
 
